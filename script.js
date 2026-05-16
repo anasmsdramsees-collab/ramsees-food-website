@@ -35,7 +35,11 @@
     const target = document.querySelector(`#productTabs .tab[data-tab="${tabId}"]`);
     const panel = document.getElementById(tabId);
     if (target) target.classList.add('active');
-    if (panel) panel.classList.add('active');
+    if (panel) {
+      panel.classList.add('active');
+      // Force all products visible when tab activates (fixes mobile IntersectionObserver gap)
+      panel.querySelectorAll('.product').forEach(p => p.classList.add('in-view'));
+    }
   }
 
   tabs.forEach(tab => {
@@ -77,7 +81,13 @@
         io.unobserve(e.target);
       }
     });
-  }, { threshold: 0.12 });
+  }, { threshold: 0.05 });
   document.querySelectorAll('.section, .brand-card, .product, .feature, .news-card')
     .forEach(el => io.observe(el));
+
+  // On page load: immediately reveal products in the default active panel
+  const defaultPanel = document.querySelector('.tab-panel.active');
+  if (defaultPanel) {
+    defaultPanel.querySelectorAll('.product').forEach(p => p.classList.add('in-view'));
+  }
 })();
